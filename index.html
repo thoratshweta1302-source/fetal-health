@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FetalAI: Predict Fetal Health</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .spinner {
+            display: none;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-6 max-w-3xl">
+        <h1 class="text-3xl font-bold text-center text-blue-600 mb-6">FetalAI: Predict Fetal Health</h1>
+        <p class="text-center text-gray-600 mb-8">Enter the fetal health metrics below to predict the health status (Normal, Suspect, or Pathological).</p>
+        
+        <form id="predictForm" method="POST" action="/predict" class="bg-white p-6 rounded-lg shadow-md">
+            <!-- Fetal Heart Rate Metrics -->
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Fetal Heart Rate Metrics</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-gray-600 mb-1">Baseline Value (bpm):</label>
+                    <input type="number" step="0.1" name="baseline value" value="120.0" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Accelerations:</label>
+                    <input type="number" step="0.001" name="accelerations" value="0.0" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Fetal Movement:</label>
+                    <input type="number" step="0.001" name="fetal_movement" value="0.0" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Uterine Contractions:</label>
+                    <input type="number" step="0.001" name="uterine_contractions" value="0.0" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Light Decelerations:</label>
+                    <input type="number" step="0.001" name="light_decelerations" value="0.0" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Severe Decelerations:</label>
+                    <input type="number" step="0.001" name="severe_decelerations" value="0.0" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Prolonged Decelerations:</label>
+                    <input type="number" step="0.001" name="prolongued_decelerations" value="0.0" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+            </div>
+
+            <!-- Variability Metrics -->
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Variability Metrics</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-gray-600 mb-1">Abnormal Short-Term Variability:</label>
+                    <input type="number" step="0.1" name="abnormal_short_term_variability" value="73.0" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Mean Value of Short-Term Variability:</label>
+                    <input type="number" step="0.1" name="mean_value_of_short_term_variability" value="0.5" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Percentage of Time with Abnormal Long-Term Variability:</label>
+                    <input type="number" step="0.1" name="percentage_of_time_with_abnormal_long_term_variability" value="43.0" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Mean Value of Long-Term Variability:</label>
+                    <input type="number" step="0.1" name="mean_value_of_long_term_variability" value="2.4" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+            </div>
+
+            <!-- Histogram Metrics -->
+            <h2 class="text-xl font-semibold text-gray-700 mb-4">Histogram Metrics</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-gray-600 mb-1">Histogram Width:</label>
+                    <input type="number" step="0.1" name="histogram_width" value="64.0" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Histogram Min:</label>
+                    <input type="number" step="0.1" name="histogram_min" value="62.0" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Histogram Max:</label>
+                    <input type="number" step="0.1" name="histogram_max" value="126.0" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Histogram Number of Peaks:</label>
+                    <input type="number" step="0.1" name="histogram_number_of_peaks" value="2.0" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Histogram Number of Zeroes:</label>
+                    <input type="number" step="0.1" name="histogram_number_of_zeroes" value="0.0" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Histogram Mode:</label>
+                    <input type="number" step="0.1" name="histogram_mode" value="120.0" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Histogram Mean:</label>
+                    <input type="number" step="0.1" name="histogram_mean" value="137.0" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Histogram Median:</label>
+                    <input type="number" step="0.1" name="histogram_median" value="121.0" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Histogram Variance:</label>
+                    <input type="number" step="0.1" name="histogram_variance" value="73.0" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+                <div>
+                    <label class="block text-gray-600 mb-1">Histogram Tendency:</label>
+                    <input type="number" step="0.1" name="histogram_tendency" value="1.0" class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400" required>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400">Predict</button>
+        </form>
+        <div id="spinner" class="spinner"></div>
+    </div>
+
+    <script>
+        document.getElementById('predictForm').addEventListener('submit', function() {
+            document.getElementById('spinner').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
